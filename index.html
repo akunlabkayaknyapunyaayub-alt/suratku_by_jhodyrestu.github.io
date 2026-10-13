@@ -1,0 +1,631 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head
+<link rel="stylesheet" href="style.css">
+>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SuratKu - Pembuat Surat Lamaran</title>
+
+<style>
+:root {
+  --green: #07866d;
+  --dark: #066653;
+  --ink: #203a34;
+  --muted: #71827e;
+  --line: #dce9e5;
+  --bg: #f3f8f6;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Arial, sans-serif;
+}
+header {
+  padding: 18px 5%;
+  background: white;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.brand { font-size: 24px; font-weight: 800; color: var(--green); }
+.brand span { color: var(--ink); }
+main { max-width: 1400px; margin: 28px auto; padding: 0 20px; }
+.intro { margin-bottom: 22px; }
+.intro h1 { margin-bottom: 8px; }
+.intro p { color: var(--muted); }
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  align-items: start;
+}
+.panel {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 28px #174b3b0a;
+}
+.head {
+  padding: 18px 21px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.head h2 { font-size: 17px; margin: 0; }
+.formbody { padding: 21px; }
+.section {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--dark);
+  padding: 17px 0 13px;
+  border-top: 1px solid #edf3f1;
+}
+.section:first-child { border-top: 0; padding-top: 0; }
+.fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.field { min-width: 0; }
+.full { grid-column: 1 / -1; }
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 7px;
+}
+input, select, textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font: inherit;
+  font-size: 13px;
+  background: white;
+  color: var(--ink);
+  outline: none;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: #2ca88b;
+  box-shadow: 0 0 0 3px #07866d15;
+}
+textarea { resize: vertical; min-height: 85px; }
+.hint { font-size: 11px; color: var(--muted); line-height: 1.5; }
+.upload {
+  border: 1.5px dashed #a8dccc;
+  background: #f7fcfa;
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+}
+.upload strong { display: block; font-size: 13px; }
+.upload small { font-size: 11px; color: var(--muted); }
+.filelabel {
+  display: inline-block;
+  background: var(--green);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 12px;
+}
+#cvFile { display: none; }
+#cvInfo {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 9px;
+  overflow-wrap: anywhere;
+}
+#cvPreview {
+  display: none;
+  width: 100%;
+  height: 280px;
+  border: 1px solid var(--line);
+  margin-top: 12px;
+}
+.sigbox {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: #f8fcfa;
+}
+#signaturePad {
+  width: 100%;
+  height: 155px;
+  display: block;
+  background: white;
+  border: 2px dashed #10a77f;
+  border-radius: 10px;
+  touch-action: none;
+  cursor: crosshair;
+}
+.actions, .tools, .formactions {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+button {
+  font: inherit;
+  cursor: pointer;
+  border: 0;
+  border-radius: 9px;
+  padding: 10px 13px;
+  font-size: 12px;
+  font-weight: bold;
+}
+.primary, .filelabel { background: var(--green); color: white; }
+.primary:hover, .filelabel:hover { background: var(--dark); }
+.secondary { background: #eaf6f1; color: var(--dark); }
+.danger { background: #fff0ef; color: #c2413a; }
+.formactions { margin-top: 20px; }
+.formactions button { flex: 1; }
+.preview { position: sticky; top: 20px; }
+.paperstage { padding: 20px; background: #edf4f1; }
+.paper {
+  background: white;
+  color: #171717;
+  max-width: 760px;
+  min-height: 900px;
+  margin: auto;
+  padding: 48px 44px;
+  box-shadow: 0 4px 18px #123b2d10;
+  font-family: "Times New Roman", serif;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.paper h2 { text-align: center; font-size: 15px; }
+.rule {
+  height: 2px;
+  background: var(--green);
+  width: 75%;
+  margin: 0 auto 24px;
+}
+.date { text-align: right; margin-bottom: 22px; }
+.subject { font-weight: bold; margin: 14px 0; }
+.paper p { text-align: justify; margin: 0 0 12px; }
+.data { width: 100%; border-collapse: collapse; margin: 12px 0 16px; }
+.data td { padding: 2px 0; vertical-align: top; }
+.data td:first-child { width: 125px; }
+.data td:nth-child(2) { width: 12px; }
+.signature { margin-top: 22px; min-height: 125px; }
+.signature img {
+  width: 180px;
+  height: 80px;
+  object-fit: contain;
+  object-position: left center;
+}
+.signname {
+  font-weight: bold;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.foot { text-align: center; color: var(--muted); font-size: 11px; }
+
+@media(max-width: 950px) {
+  .layout { grid-template-columns: 1fr; }
+  .preview { position: static; }
+}
+@media(max-width: 560px) {
+  main { padding: 0 12px; }
+  .fields { grid-template-columns: 1fr; }
+  .full { grid-column: auto; }
+  .paperstage { padding: 10px; }
+  .paper { padding: 30px 22px; min-height: 750px; font-size: 11px; }
+  .formactions { flex-direction: column; }
+}
+@media print {
+  @page { size: A4; margin: 0; }
+  body { background: white; }
+  header, .intro, .formpanel, .head, .foot { display: none !important; }
+  main { margin: 0; padding: 0; }
+  .layout { display: block; }
+  .preview { position: static; border: 0; box-shadow: none; }
+  .paperstage { padding: 0; background: white; }
+  .paper {
+    width: 210mm;
+    max-width: none;
+    min-height: 297mm;
+    margin: 0;
+    padding: 20mm 22mm;
+    box-shadow: none;
+    font-size: 12pt;
+    line-height: 1.55;
+  }
+  .tools { display: none !important; }
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="brand">Surat<span>Ku.</span></div>
+  <small>Pembuat surat lamaran kerja</small>
+</header>
+
+<main>
+  <div class="intro">
+    <h1>Buat Surat Lamaran Kerja</h1>
+    <p>Isi data, tambahkan CV dan tanda tangan, lalu cetak suratmu.</p>
+  </div>
+
+  <div class="layout">
+    <section class="panel formpanel">
+      <div class="head"><h2>Data Lamaran</h2></div>
+      <div class="formbody">
+        <form id="appForm">
+          <div class="section">▣ Data Pribadi</div>
+          <div class="fields">
+            <div class="field">
+              <label for="fullName">Nama Lengkap *</label>
+              <input id="fullName" placeholder="Nama lengkap" required>
+            </div>
+            <div class="field">
+              <label for="email">Email *</label>
+              <input id="email" type="email" placeholder="nama@email.com" required>
+            </div>
+            <div class="field">
+              <label for="phone">Nomor Telepon *</label>
+              <input id="phone" type="tel" placeholder="08xxxxxxxxxx" required>
+            </div>
+            <div class="field">
+              <label for="birthDate">Tanggal Lahir</label>
+              <input id="birthDate" type="date">
+            </div>
+            <div class="field full">
+              <label for="address">Alamat</label>
+              <input id="address" placeholder="Kota tempat tinggal">
+            </div>
+            <div class="field full">
+              <label for="education">Pendidikan Terakhir</label>
+              <select id="education">
+                <option>SMA / SMK</option>
+                <option>D1</option><option>D2</option><option>D3</option>
+                <option>D4 / S1</option><option>S2</option><option>S3</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="section">▣ Informasi Pekerjaan</div>
+          <div class="fields">
+            <div class="field">
+              <label for="company">Nama Perusahaan *</label>
+              <input id="company" placeholder="Nama perusahaan" required>
+            </div>
+            <div class="field">
+              <label for="position">Posisi yang Dilamar *</label>
+              <input id="position" placeholder="Posisi pekerjaan" required>
+            </div>
+            <div class="field full">
+              <label for="source">Sumber Informasi Lowongan</label>
+              <select id="source">
+                <option>Website perusahaan</option>
+                <option>Job portal</option>
+                <option>Media sosial</option>
+                <option>Teman / keluarga</option>
+                <option>Informasi lainnya</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="section">▤ Upload CV</div>
+          <div class="upload">
+            <div style="font-size:27px">📄</div>
+            <strong>Pilih CV kamu</strong>
+            <small>Format PDF, DOC, DOCX · Maksimal 5 MB</small><br>
+            <label class="filelabel" for="cvFile">＋ Pilih File</label>
+            <input id="cvFile" type="file" accept=".pdf,.doc,.docx">
+            <div id="cvInfo">File hanya diproses di browser ini.</div>
+            <iframe id="cvPreview" title="Pratinjau CV PDF"></iframe>
+          </div>
+
+          <div class="section">✦ Keahlian & Pengalaman</div>
+          <div class="fields">
+            <div class="field full">
+              <label for="skills">Keahlian</label>
+              <textarea id="skills" placeholder="Microsoft Office, komunikasi, kerja tim..."></textarea>
+            </div>
+            <div class="field full">
+              <label for="motivation">Deskripsi Singkat Diri</label>
+              <textarea id="motivation" placeholder="Ceritakan motivasi dan kelebihanmu..."></textarea>
+            </div>
+          </div>
+
+          <div class="section">✍ Tanda Tangan</div>
+          <div class="sigbox">
+            <p class="hint">Gambar tanda tangan menggunakan mouse atau jari.</p>
+            <canvas id="signaturePad" width="600" height="220"></canvas>
+            <div class="actions">
+              <button type="button" class="danger" id="clearSignature">Hapus</button>
+              <button type="button" class="primary" id="saveSignature">Gunakan Tanda Tangan</button>
+            </div>
+            <p class="hint" id="signatureStatus">Belum ada tanda tangan.</p>
+          </div>
+
+          <div class="formactions">
+            <button type="button" class="secondary" id="resetForm">Reset Form</button>
+            <button type="button" class="primary" id="generateButton">Buat Surat Lamaran →</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="panel preview">
+      <div class="head">
+        <h2>Preview Surat</h2>
+        <div class="tools" style="margin:0">
+          <button class="secondary" id="copyButton" type="button">Salin Surat</button>
+          <button class="primary" id="printButton" type="button">Cetak / PDF</button>
+        </div>
+      </div>
+
+      <div class="paperstage">
+        <article class="paper" id="letterPreview">
+          <h2>SURAT LAMARAN KERJA</h2>
+          <div class="rule"></div>
+          <div class="date" id="letterDate"></div>
+          <div>Kepada Yth.<br><strong>HRD / Personalia</strong><br>di Tempat</div>
+          <div class="subject">Perihal: Lamaran Pekerjaan</div>
+
+          <p>Dengan hormat,</p>
+          <p id="openingParagraph">Saya bermaksud mengajukan lamaran pekerjaan.</p>
+          <p>Berikut data diri saya:</p>
+
+          <table class="data">
+            <tr><td>Nama</td><td>:</td><td id="previewName">Nama Lengkap</td></tr>
+            <tr><td>Email</td><td>:</td><td id="previewEmail">nama@email.com</td></tr>
+            <tr><td>Telepon</td><td>:</td><td id="previewPhone">-</td></tr>
+            <tr><td>Tanggal Lahir</td><td>:</td><td id="previewBirthDate">-</td></tr>
+            <tr><td>Alamat</td><td>:</td><td id="previewAddress">-</td></tr>
+            <tr><td>Pendidikan</td><td>:</td><td id="previewEducation">SMA / SMK</td></tr>
+          </table>
+
+          <p id="previewMotivation">Saya adalah pribadi yang disiplin, bertanggung jawab, dan memiliki motivasi tinggi untuk belajar.</p>
+          <p id="previewSkills" style="display:none"></p>
+          <p>Sebagai bahan pertimbangan, saya siap melampirkan CV dan dokumen pendukung lainnya.</p>
+          <p>Demikian surat lamaran ini saya sampaikan. Atas perhatian dan kesempatan yang diberikan, saya mengucapkan terima kasih.</p>
+
+          <div style="margin-top:15px">Hormat saya,</div>
+          <div class="signature">
+            <img id="signatureImage" alt="Tanda tangan" style="display:none">
+            <p class="signname" id="signatureName">Nama Lengkap</p>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+  <p class="foot">SuratKu · Made by Jhody.</p>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const ids = [
+  'fullName','email','phone','birthDate','address','education',
+  'company','position','source','skills','motivation'
+];
+
+let cvUrl = null;
+let hasInk = false;
+let savedSignature = '';
+
+function safe(value, fallback = '-') {
+  return value && value.trim() ? value.trim() : fallback;
+}
+
+function dateFormat(value) {
+  if (!value) return '-';
+  const [year, month, day] = value.split('-');
+  const months = [
+    'Januari','Februari','Maret','April','Mei','Juni',
+    'Juli','Agustus','September','Oktober','November','Desember'
+  ];
+  return `${day} ${months[Number(month)-1]} ${year}`;
+}
+
+function updatePreview() {
+  $('previewName').textContent = safe($('fullName').value, 'Nama Lengkap');
+  $('previewEmail').textContent = safe($('email').value, 'nama@email.com');
+  $('previewPhone').textContent = safe($('phone').value);
+  $('previewBirthDate').textContent = dateFormat($('birthDate').value);
+  $('previewAddress').textContent = safe($('address').value);
+  $('previewEducation').textContent = $('education').value;
+  $('signatureName').textContent = safe($('fullName').value, 'Nama Lengkap');
+
+  $('openingParagraph').textContent =
+    `Berdasarkan informasi lowongan pekerjaan yang saya peroleh dari ${safe($('source').value)}, saya bermaksud mengajukan lamaran untuk posisi ${safe($('position').value, 'yang tersedia')} di ${safe($('company').value, 'perusahaan yang dituju')}.`;
+
+  $('previewMotivation').textContent = safe(
+    $('motivation').value,
+    'Saya adalah pribadi yang disiplin, bertanggung jawab, dan memiliki motivasi tinggi untuk belajar serta berkembang.'
+  );
+
+  const skills = $('skills').value.trim();
+  $('previewSkills').style.display = skills ? 'block' : 'none';
+  $('previewSkills').textContent = skills
+    ? 'Keahlian yang saya miliki antara lain: ' + skills + '.'
+    : '';
+
+  $('letterDate').textContent =
+    'Jakarta, ' + dateFormat(new Date().toISOString().slice(0,10));
+}
+
+ids.forEach(id => {
+  $(id).addEventListener('input', updatePreview);
+  $(id).addEventListener('change', updatePreview);
+});
+
+// Upload CV
+$('cvFile').addEventListener('change', function() {
+  const file = this.files[0];
+  if (!file) return;
+
+  if (file.size > 5 * 1024 * 1024) {
+    alert('Ukuran CV maksimal 5 MB.');
+    this.value = '';
+    return;
+  }
+
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (!['pdf','doc','docx'].includes(ext)) {
+    alert('Pilih file PDF, DOC, atau DOCX.');
+    this.value = '';
+    return;
+  }
+
+  $('cvInfo').textContent =
+    `Dipilih: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+
+  if (cvUrl) URL.revokeObjectURL(cvUrl);
+
+  if (ext === 'pdf') {
+    cvUrl = URL.createObjectURL(file);
+    $('cvPreview').src = cvUrl;
+    $('cvPreview').style.display = 'block';
+  } else {
+    $('cvPreview').style.display = 'none';
+  }
+});
+
+// Area tanda tangan
+const canvas = $('signaturePad');
+const ctx = canvas.getContext('2d');
+ctx.strokeStyle = '#111827';
+ctx.lineWidth = 3.2;
+ctx.lineCap = 'round';
+ctx.lineJoin = 'round';
+
+let drawing = false;
+
+function pointerPosition(event) {
+  const rect = canvas.getBoundingClientRect();
+  return {
+    x: (event.clientX - rect.left) * canvas.width / rect.width,
+    y: (event.clientY - rect.top) * canvas.height / rect.height
+  };
+}
+
+canvas.addEventListener('pointerdown', event => {
+  event.preventDefault();
+  drawing = true;
+  canvas.setPointerCapture(event.pointerId);
+  const point = pointerPosition(event);
+  ctx.beginPath();
+  ctx.moveTo(point.x, point.y);
+});
+
+canvas.addEventListener('pointermove', event => {
+  if (!drawing) return;
+  event.preventDefault();
+  const point = pointerPosition(event);
+  ctx.lineTo(point.x, point.y);
+  ctx.stroke();
+  hasInk = true;
+});
+
+function stopDrawing() {
+  drawing = false;
+  ctx.beginPath();
+}
+
+canvas.addEventListener('pointerup', stopDrawing);
+canvas.addEventListener('pointercancel', stopDrawing);
+
+$('clearSignature').addEventListener('click', () => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  hasInk = false;
+  savedSignature = '';
+  $('signatureImage').style.display = 'none';
+  $('signatureImage').removeAttribute('src');
+  $('signatureStatus').textContent = 'Tanda tangan dihapus.';
+});
+
+$('saveSignature').addEventListener('click', () => {
+  if (!hasInk) {
+    alert('Gambar tanda tangan terlebih dahulu.');
+    return;
+  }
+
+  savedSignature = canvas.toDataURL('image/png');
+  $('signatureImage').src = savedSignature;
+  $('signatureImage').style.display = 'block';
+  $('signatureStatus').textContent =
+    'Tanda tangan berhasil ditambahkan ke surat.';
+});
+
+// Buat surat
+$('generateButton').addEventListener('click', () => {
+  if (!$('appForm').reportValidity()) return;
+  updatePreview();
+
+  if (savedSignature) {
+    $('signatureImage').src = savedSignature;
+    $('signatureImage').style.display = 'block';
+  }
+
+  $('letterPreview').scrollIntoView({behavior:'smooth', block:'start'});
+});
+
+// Cetak atau simpan sebagai PDF
+$('printButton').addEventListener('click', () => {
+  updatePreview();
+
+  if (savedSignature) {
+    $('signatureImage').src = savedSignature;
+    $('signatureImage').style.display = 'block';
+  }
+
+  window.print();
+});
+
+// Salin teks surat
+$('copyButton').addEventListener('click', async () => {
+  updatePreview();
+
+  try {
+    await navigator.clipboard.writeText($('letterPreview').innerText);
+    alert('Surat berhasil disalin.');
+  } catch (error) {
+    alert('Pilih teks surat lalu tekan Ctrl+C untuk menyalin.');
+  }
+});
+
+// Reset
+$('resetForm').addEventListener('click', () => {
+  if (!confirm('Hapus semua data form?')) return;
+
+  $('appForm').reset();
+
+  if (cvUrl) {
+    URL.revokeObjectURL(cvUrl);
+    cvUrl = null;
+  }
+
+  $('cvInfo').textContent = 'File hanya diproses di browser ini.';
+  $('cvPreview').removeAttribute('src');
+  $('cvPreview').style.display = 'none';
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  hasInk = false;
+  savedSignature = '';
+
+  $('signatureImage').removeAttribute('src');
+  $('signatureImage').style.display = 'none';
+  $('signatureStatus').textContent = 'Belum ada tanda tangan.';
+
+  updatePreview();
+});
+
+updatePreview();
+</script>
+</body>
+</html>
